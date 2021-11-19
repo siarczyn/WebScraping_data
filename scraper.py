@@ -1,10 +1,11 @@
 import pandas as pd
+from selenium import webdriver
+from time import sleep
 from bs4 import BeautifulSoup
 import requests
-
-def scrapdata(link):
+def scrapdata(link,fullinfo):
     i = 1
-    fullinfo = pd.DataFrame({'nazwa': [], 'strona': [], 'email': [], 'telefon': []})
+    #fullinfo = pd.DataFrame({'branza': [], 'nazwa': [], 'strona': [], 'email': [], 'telefon': []})
     while True:
         if (i == 1):
             URL = "https://panoramafirm.pl/"+link
@@ -12,12 +13,11 @@ def scrapdata(link):
             URL = "https://panoramafirm.pl/"+link+"/firmy,"+str(i)+".html"
         r = requests.get(URL)
         print(i)
+        print(URL)
         soup = BeautifulSoup(r.content, 'html.parser')
         matching = soup.find("ul", class_='list-unstyled')
         new1 = matching.find_all(class_='company-item')
-
-        print (matching)
-        # control if we reached the end 
+        # control if we reached the end
         if new1==[] :
             print("reached the end")
             break
@@ -34,5 +34,6 @@ def scrapdata(link):
             telefon = telefon1.get('title')
             if (website != None or email != None or telefon != None ):
                     fullinfo = fullinfo.append(
-                            {'nazwa': title.text, 'strona': website, 'email': email, 'telefon': telefon}, ignore_index=True)
-        return fullinfo
+                            {'branza': link, 'nazwa': title.text, 'strona': website, 'email': email, 'telefon': telefon}, ignore_index=True)
+    return fullinfo
+
