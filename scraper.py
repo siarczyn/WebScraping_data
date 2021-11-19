@@ -3,7 +3,7 @@ from selenium import webdriver
 from time import sleep
 from bs4 import BeautifulSoup
 import requests
-def scrapdata(link,fullinfo):
+def scrapdata(link,Ogbranch,fullinfo):
     i = 1
     #fullinfo = pd.DataFrame({'branza': [], 'nazwa': [], 'strona': [], 'email': [], 'telefon': []})
     while True:
@@ -11,12 +11,17 @@ def scrapdata(link,fullinfo):
             URL = "https://panoramafirm.pl/"+link
         else:
             URL = "https://panoramafirm.pl/"+link+"/firmy,"+str(i)+".html"
+
         r = requests.get(URL)
         print(i)
         print(URL)
-        soup = BeautifulSoup(r.content, 'html.parser')
-        matching = soup.find("ul", class_='list-unstyled')
-        new1 = matching.find_all(class_='company-item')
+        try:
+            soup = BeautifulSoup(r.content, 'html.parser')
+            matching = soup.find("ul", class_='list-unstyled')
+            new1 = matching.find_all(class_='company-item')
+        except:
+            print("błąd w " + URL)
+            pass
         # control if we reached the end
         if new1==[] :
             print("reached the end")
@@ -34,6 +39,6 @@ def scrapdata(link,fullinfo):
             telefon = telefon1.get('title')
             if (website != None or email != None or telefon != None ):
                     fullinfo = fullinfo.append(
-                            {'branza': link, 'nazwa': title.text, 'strona': website, 'email': email, 'telefon': telefon}, ignore_index=True)
+                            {'OGBranch':Ogbranch,'branch': link, 'nazwa': title.text, 'strona': website, 'email': email, 'telefon': telefon}, ignore_index=True)
     return fullinfo
 
